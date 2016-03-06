@@ -23,7 +23,7 @@ EOD;
     {
         // $return = null;
         $yiiPath = Yii::$app->basePath;
-        $appPath = Yii::getAlias('@console');
+        $appPath = Yii::getAlias('@app');
         $resquePath = __DIR__;
         $resque = Yii::$app->resque;
 
@@ -40,7 +40,6 @@ EOD;
         $loghandler = isset(Yii::$app->resque->loghandler) ? Yii::$app->resque->loghandler : null;
         $logtarget = isset(Yii::$app->resque->logtarget) ? Yii::$app->resque->logtarget : null;
         $options = '';
-
         $command = 'nohup sh -c "LOGHANDLER=' . $loghandler . ' LOGHANDLERTARGET=' . $logtarget . ' PREFIX=' . $prefix . ' QUEUE=' . $queue . ' COUNT=' . $count . ' REDIS_BACKEND=' . $host . ' REDIS_BACKEND_DB=' . $db . ' REDIS_AUTH=' . $auth . ' INTERVAL=' . $interval . ' VERBOSE=' . $verbose . ' YII_PATH=' . $yiiPath . ' APP_PATH=' . $appPath . ' ' . $options . ' php ' . $resquePath . '/bin/' . $script . '" >> ' . $appPath . '/runtime/yii_resque_log.log 2>&1 &';
         exec($command, $return);
         return $return;

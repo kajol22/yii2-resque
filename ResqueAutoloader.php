@@ -32,7 +32,7 @@ class ResqueAutoloader
      */
     static public function autoload($class)
     {
-        $workerPath = \yii\BaseYii::$app->basePath . '/../console/resque/';
+        $workerPath = \yii\BaseYii::$app->basePath . '/../components/';
         $class = basename(str_replace('\\', '/', $class));
         if (is_file($file = dirname(__FILE__) . '/lib/' . str_replace(array('_', "\0"), array('/', ''), $class) . '.php')) {
             require $file;

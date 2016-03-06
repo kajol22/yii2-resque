@@ -1,10 +1,10 @@
 <?php
 use resque\lib\ResqueAutoloader;
-use resque\lib\Resque ;
-use resque\lib\Resque\ResqueScheduler_Worker ;
-use resque\lib\Resque\Resque_Worker ;
+use resque\lib\Resque;
+use resque\lib\Resque\ResqueScheduler_Worker;
+use resque\lib\Resque\Resque_Worker;
 
-$includeFiles=getenv('INCLUDE_FILES');
+$includeFiles = getenv('INCLUDE_FILES');
 if ($includeFiles) {
     $includeFiles = explode(',', $includeFiles);
     foreach ($includeFiles as $file) {
@@ -14,28 +14,23 @@ if ($includeFiles) {
 
 require(__DIR__ . '/../../../autoload.php');
 require(__DIR__ . '/../../../yiisoft/yii2/Yii.php');
+$config = require(__DIR__ . '/../../../../config/console.php');
 
-$config = yii\helpers\ArrayHelper::merge(
-    require(__DIR__ . '/../../../../common/config/main.php'),
-    require(__DIR__ . '/../../../../common/config/main-local.php'),
-    require(__DIR__ . '/../../../../console/config/main.php'),
-    require(__DIR__ . '/../../../../console/config/main-local.php')
-) ;
 
 $application = new yii\console\Application($config);
 
 # Turn off our amazing library autoload
-spl_autoload_unregister(array('Yii','autoload'));
+spl_autoload_unregister(array('Yii', 'autoload'));
 
 require_once(dirname(__FILE__) . '/../ResqueAutoloader.php');
 ResqueAutoloader::register();
 
 # Give back the power to Yii
-spl_autoload_register(array('Yii','autoload'));
+spl_autoload_register(array('Yii', 'autoload'));
 
 
 $QUEUE = getenv('QUEUE');
-if(empty($QUEUE)) {
+if (empty($QUEUE)) {
     die("Set QUEUE env var containing the list of queues to work.\n");
 }
 
@@ -43,7 +38,7 @@ $REDIS_BACKEND = getenv('REDIS_BACKEND');
 $REDIS_BACKEND_DB = getenv('REDIS_BACKEND_DB');
 $REDIS_AUTH = getenv('REDIS_AUTH');
 
-if(!empty($REDIS_BACKEND)) {
+if (!empty($REDIS_BACKEND)) {
     $REDIS_BACKEND_DB = (!empty($REDIS_BACKEND_DB)) ? $REDIS_BACKEND_DB : 0;
     Resque::setBackend($REDIS_BACKEND, $REDIS_BACKEND_DB, $REDIS_AUTH);
 }
@@ -53,9 +48,9 @@ $logLevel = 0;
 $LOGGING = getenv('LOGGING');
 $VERBOSE = getenv('VERBOSE');
 $VVERBOSE = getenv('VVERBOSE');
-if(!empty($LOGGING) || !empty($VERBOSE)) {
+if (!empty($LOGGING) || !empty($VERBOSE)) {
     $logLevel = Resque_Worker::LOG_NORMAL;
-} else if(!empty($VVERBOSE)) {
+} else if (!empty($VVERBOSE)) {
     $logLevel = Resque_Worker::LOG_VERBOSE;
 }
 
@@ -67,28 +62,28 @@ if (class_exists('MonologInit_MonologInit')) {
     if (!empty($LOG_HANDLER) && !empty($LOG_HANDLER_TARGET)) {
         $logger = new MonologInit_MonologInit($LOG_HANDLER, $LOG_HANDLER_TARGET);
     } else {
-        fwrite(STDOUT, '*** loghandler or logtarget is not set.'."\n");    
+        fwrite(STDOUT, '*** loghandler or logtarget is not set.' . "\n");
     }
 } else {
-    fwrite(STDOUT, '*** MonologInit_MonologInit logger cannot be found, continue without loghandler.'."\n");
+    fwrite(STDOUT, '*** MonologInit_MonologInit logger cannot be found, continue without loghandler.' . "\n");
 }
 
 // Check for jobs every $interval seconds
 $interval = 5;
 $INTERVAL = getenv('INTERVAL');
-if(!empty($INTERVAL)) {
+if (!empty($INTERVAL)) {
     $interval = $INTERVAL;
 }
 
 $PREFIX = getenv('PREFIX');
-if(!empty($PREFIX)) {
-    fwrite(STDOUT, '*** Prefix set to '.$PREFIX."\n");
+if (!empty($PREFIX)) {
+    fwrite(STDOUT, '*** Prefix set to ' . $PREFIX . "\n");
     Resque::redis()->prefix($PREFIX);
 }
 
 $worker = new ResqueScheduler_Worker();
 if (!empty($logger)) {
-    $worker->registerLogger($logger);    
+    $worker->registerLogger($logger);
 } else {
     fwrite(STDOUT, "*** Starting scheduler worker\n");
 }
