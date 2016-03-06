@@ -46,7 +46,7 @@ class Resque_Job
         if (file_exists(\yii\BaseYii::$app->basePath . '/../frontend/components')) {
             $this->payload['class'] = "Worker_" . $this->payload['class'];
         } else {
-            $this->payload['class'] = 'app\\components\\crons\\' . $this->payload['class'];
+            $this->payload['class'] = 'app\\components\\cron\\' . $this->payload['class'];
         }
     }
 
